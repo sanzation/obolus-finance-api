@@ -197,3 +197,16 @@ This is the same engine used in:
 
 If you build something with it or have ideas → would love to hear it.
 
+## 📜 API Usage
+
+This repository is an open example implementation.
+
+The Obolus API itself is subject to usage conditions:
+
+- no abuse or excessive automated traffic
+- no resale of raw API outputs as a standalone product
+- attribution required when used in public tools
+
+For full details:
+👉 https://www.obolusfinanz.de/en/developers
+
