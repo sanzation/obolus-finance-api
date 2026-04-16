@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Obolus API Basic Examples</title>
+    <meta
+      name="description"
+      content="Simple public examples for the Obolus berechne and taxcompare API endpoints."
+    />
+    <meta property="og:title" content="Obolus API Basic Examples" />
+    <meta
+      property="og:description"
+      content="Minimal public examples for the Obolus berechne and taxcompare API endpoints."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="./og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Obolus API Basic Examples" />
+    <meta
+      name="twitter:description"
+      content="Minimal public examples for the Obolus berechne and taxcompare API endpoints."
+    />
+    <meta name="twitter:image" content="./og-image.png" />
+    <link rel="icon" href="./coins.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero-card">
+        <p class="eyebrow">Obolus API Basic Examples</p>
+        <h1>Minimal payroll and salary comparison demos</h1>
+        <p class="hero-copy">
+          A very slim example repo for the public Obolus API. It shows how to call
+          <code>/api/berechne</code> and <code>/api/taxcompare</code> from a tiny frontend.
+        </p>
+        <div class="hero-links">
+          <a href="https://www.obolusfinanz.de/en" target="_blank" rel="noreferrer">Main site</a>
+          <a
+            href="https://www.obolusfinanz.de/en/developers"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Developer docs
+          </a>
+          <a href="https://www.obolusfinanz.de/api/openapi" target="_blank" rel="noreferrer">
+            OpenAPI
+          </a>
+        </div>
+      </header>
+
+      <section class="config-card">
+        <div class="section-head">
+          <p class="eyebrow">Connection</p>
+          <h2>API settings</h2>
+        </div>
+        <div class="form-grid two-up">
+          <label>
+            <span>API base URL</span>
+            <input id="apiBase" type="text" value="/api" />
+          </label>
+          <label>
+            <span>Public API key (optional)</span>
+            <input id="apiKey" type="password" placeholder="x-public-api-key" />
+          </label>
+        </div>
+        <p class="config-note">
+          Local development uses the Vite proxy at <code>/api</code>. If you deploy this demo on
+          another domain, you will need a same-origin proxy or API-side CORS support.
+        </p>
+      </section>
+
+      <nav class="tab-row" aria-label="Demo modes">
+        <button class="tab-button is-active" data-tab-target="payroll-panel">Payroll</button>
+        <button class="tab-button" data-tab-target="compare-panel">Compare</button>
+      </nav>
+
+      <main class="panel-stack">
+        <section id="payroll-panel" class="demo-panel is-active">
+          <div class="section-head">
+            <p class="eyebrow">Endpoint</p>
+            <h2>/api/berechne</h2>
+            <p class="section-copy">
+              One-person payroll calculation with only country, annual gross, currency, and tax year.
+            </p>
+          </div>
+
+          <form id="payrollForm" class="form-grid" action="javascript:void(0)" onsubmit="return false;" novalidate>
+            <label>
+              <span>Country</span>
+              <select name="country">
+                <option value="DE">Germany</option>
+                <option value="AT">Austria</option>
+                <option value="CH">Switzerland</option>
+                <option value="US">United States</option>
+                <option value="UK">United Kingdom</option>
+                <option value="IE">Ireland</option>
+                <option value="CA">Canada</option>
+                <option value="AU">Australia</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Annual gross salary</span>
+              <input name="annualGross" type="number" min="0" step="1000" value="60000" />
+            </label>
+
+            <label>
+              <span>Currency</span>
+              <select name="currency">
+                <option value="EUR">EUR</option>
+                <option value="CHF">CHF</option>
+                <option value="USD">USD</option>
+                <option value="GBP">GBP</option>
+                <option value="CAD">CAD</option>
+                <option value="AUD">AUD</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Tax year</span>
+              <input name="taxYear" type="number" min="2025" step="1" value="2026" />
+            </label>
+
+            <div class="form-action-row">
+              <button id="payrollSubmit" type="button" class="primary-button">Calculate payroll</button>
+            </div>
+          </form>
+
+          <div id="payrollStatus" class="status-line" aria-live="polite"></div>
+          <div id="payrollResult" class="result-grid"></div>
+        </section>
+
+        <section id="compare-panel" class="demo-panel">
+          <div class="section-head">
+            <p class="eyebrow">Endpoint</p>
+            <h2>/api/taxcompare</h2>
+            <p class="section-copy">
+              Compare one annual gross salary across a small country set with a single request.
+            </p>
+          </div>
+
+          <form id="compareForm" class="form-grid" action="javascript:void(0)" onsubmit="return false;" novalidate>
+            <label>
+              <span>Annual gross salary</span>
+              <input name="annualGross" type="number" min="0" step="1000" value="60000" />
+            </label>
+
+            <label>
+              <span>Currency</span>
+              <select name="currency">
+                <option value="eur">eur</option>
+                <option value="chf">chf</option>
+                <option value="usd">usd</option>
+                <option value="gbp">gbp</option>
+                <option value="cad">cad</option>
+                <option value="aud">aud</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Tax year</span>
+              <input name="taxYear" type="number" min="2025" step="1" value="2026" />
+            </label>
+
+            <fieldset class="country-pills">
+              <legend>Countries</legend>
+              <label><input type="checkbox" name="countries" value="DE" checked /> DE</label>
+              <label><input type="checkbox" name="countries" value="AT" checked /> AT</label>
+              <label><input type="checkbox" name="countries" value="CH" checked /> CH</label>
+              <label><input type="checkbox" name="countries" value="AU" checked /> AU</label>
+              <label><input type="checkbox" name="countries" value="CA" /> CA</label>
+              <label><input type="checkbox" name="countries" value="IE" /> IE</label>
+              <label><input type="checkbox" name="countries" value="UK" /> UK</label>
+              <label><input type="checkbox" name="countries" value="US" /> US</label>
+            </fieldset>
+
+            <div class="form-action-row">
+              <button id="compareSubmit" type="button" class="primary-button">Compare salary</button>
+            </div>
+          </form>
+
+          <div id="compareStatus" class="status-line" aria-live="polite"></div>
+          <div id="compareResult" class="table-shell"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
