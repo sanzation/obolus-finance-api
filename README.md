@@ -3,7 +3,14 @@
 Compare net income, taxes, and purchasing power across countries with one consistent model.
 
 ---
+## ⚡ From salary → decision
 
+€60k Germany → €1,613/month available  
+€60k Austria → €1,850/month available  
+
+→ +€237 difference
+
+---
 ## ⚡ What this enables
 
 Input a salary → get comparable real-world outcomes across countries:
