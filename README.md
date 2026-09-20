@@ -1,212 +1,72 @@
-# 🌍 Obolus API – Cross-Country Income & Tax Engine
+# Obolus Finance API and Remote MCP Examples
 
-Compare net income, taxes, and purchasing power across countries with one consistent model.
+Public examples for the Obolus payroll and multi-country tax API. This repository contains a small Vite client, connection examples, and documentation. The hosted calculation engine and MCP server run at obolusfinanz.de; their server source code is not contained in this repository.
 
----
-## ⚡ From salary → decision
+## Remote MCP server
 
-€60k Germany → €1,613/month available  
-€60k Austria → €1,850/month available  
+Obolus provides a public, read-only MCP endpoint:
 
-→ +€237 difference
+- Streamable HTTP: `https://www.obolusfinanz.de/api/mcp/claude`
+- Tools: `berechne` for detailed single-country payroll and `taxcompare` for comparisons across two or more countries
+- Access: no login or API key required for these read-only tools
+- Registry: [`io.github.sanzation/obolus`](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.sanzation%2Fobolus)
+- Full API and MCP documentation: [Obolus Developers](https://www.obolusfinanz.de/en/developers)
 
----
-## ⚡ What this enables
+The `/claude` URL is the agent-neutral MCP surface despite its historical route name. It is suitable for MCP clients other than Claude. It is separate from the browser-facing ChatGPT app integration at `/api/mcp`.
 
-Input a salary → get comparable real-world outcomes across countries:
+### Connect from VS Code / GitHub Copilot
 
-* Net income after taxes
-* Social contributions
-* Available income after costs
-* Cross-country comparisons
-
-👉 Built for relocation tools, expat planning, and fintech apps.
-
----
-
-## 🧪 Example
-
-**Input:**
+This repository includes a [workspace `.mcp.json`](.mcp.json). Open the folder in VS Code, open the MCP server list, and start `obolus`. You can also copy its configuration into your own workspace:
 
 ```json
 {
-  "country": "DE",
-  "gross": 60000,
-  "year": 2026
+  "servers": {
+    "obolus": {
+      "type": "http",
+      "url": "https://www.obolusfinanz.de/api/mcp/claude"
+    }
+  }
 }
 ```
 
-**Output (simplified):**
+Ask the agent, for example: "Compare an annual gross salary of EUR 60,000 in Germany and Austria for tax year 2026 using Obolus." The agent should request missing profile details instead of inventing them. Calculations are estimates; inspect each tool's returned assumptions and source information before using a result.
 
-```json
-{
-  "net": 36611,
-  "monthly_available": 1613
-}
-```
+To inspect the public MCP connection without making a calculation, run `npm run mcp:check`. This lists the available tools and checks that both expected tools are present.
 
-👉 Now compare instantly with other countries:
+## REST API demo
 
-```json
-{
-  "countries": ["DE", "AT", "CH", "AU"]
-}
-```
-
----
-
-## 🌐 Why this API is different
-
-Most tools:
-
-* country-specific
-* inconsistent assumptions
-* not comparable
-
-**Obolus:**
-
-* same calculation model across countries
-* comparable outputs by design
-* built for real decisions (not just tax math)
-
----
-
-## 🔗 Live API
-
-POST `/api/berechne` → calculate net income
-POST `/api/taxcompare` → compare across countries
-
-Base URL:
-
-```
-https://www.obolusfinanz.de/api
-```
-
-Docs:
-👉 https://www.obolusfinanz.de/en/developers
-👉 https://www.obolusfinanz.de/api/openapi
-
----
-
-## 🧑‍💻 Quickstart
-
-```js
-const res = await fetch("https://www.obolusfinanz.de/api/taxcompare", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    annual_gross: 60000,
-    tax_year: "2026",
-    countries: ["DE", "AT", "CH"]
-  })
-})
-
-const data = await res.json()
-console.log(data)
-```
-
----
-
-## 🌍 Supported countries
-
-* Germany 🇩🇪
-* Austria 🇦🇹
-* Switzerland 🇨🇭
-* USA 🇺🇸
-* UK 🇬🇧
-* Australia 🇦🇺
-* Canada 🇨🇦
-* Ireland 🇮🇪
-
----
-
-## 🧩 Use cases
-
-* relocation decision tools
-* expat financial planning
-* payroll simulations
-* salary benchmarking
-* fintech apps
-* cost-of-living tools
-
----
-
-## 🧱 This repo
-
-Minimal frontend example using:
-
-* plain HTML / CSS / JS
-* Vite dev setup
-* direct API calls
-
-Includes:
-
-* payroll calculator demo
-* salary comparison demo
-
-👉 Designed to be copied into your own project.
-
----
-
-## 🔐 Authentication
-
-Optional API key:
-
-```
-x-public-api-key: YOUR_API_KEY
-```
-
----
-
-## ⚙️ Local development
+The Vite app demonstrates direct REST calls to `POST /api/berechne` and `POST /api/taxcompare`. It is an API client, not a local MCP server or a copy of the tax engine.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open:
+Open `http://localhost:8080`. The Vite proxy forwards API requests; see [`vite.config.js`](vite.config.js). Build with `npm run build`.
 
+For a current, complete request schema and response examples, use the [developers page](https://www.obolusfinanz.de/en/developers) or [OpenAPI document](https://www.obolusfinanz.de/api/openapi). The browser demo uses the legacy `annual_gross` alias in major currency units. New `taxcompare` integrations should prefer `salary_ct` in minor currency units: `6000000` means EUR 60,000 when `currency` is `eur` and `salary_period` is `annual`. At least two countries and a supported tax year are required. The detailed `berechne` endpoint also uses minor currency units for salary fields.
+
+Example comparison request:
+
+```js
+const response = await fetch("https://www.obolusfinanz.de/api/taxcompare", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    salary_ct: 6000000,
+    salary_period: "annual",
+    tax_year: "2026",
+    countries: ["DE", "AT"],
+    currency: "eur"
+  })
+});
+if (!response.ok) throw new Error(await response.text());
+const result = await response.json();
+console.log(result);
 ```
-http://localhost:8080
-```
 
-Uses Vite proxy to avoid CORS issues.
+Supported countries: Germany, Austria, Switzerland, United States, United Kingdom, Ireland, Canada, and Australia. The returned net pay is a tax/payroll result. Housing, groceries, health costs outside payroll, and purchasing-power adjustments are separate models; do not describe payroll net as disposable income after living costs.
 
----
+## Repository scope and usage
 
-## 💡 Notes
-
-* `berechne` uses minor currency units (cents)
-* `taxcompare` uses major units
-* advanced product logic intentionally excluded
-
----
-
-## 🚀 Build on top
-
-This is the same engine used in:
-
-👉 https://www.obolusfinanz.de/en
-
----
-
-## 📬 Feedback
-
-If you build something with it or have ideas → would love to hear it.
-
-## 📜 API Usage
-
-This repository is an open example implementation.
-
-The Obolus API itself is subject to usage conditions:
-
-- no abuse or excessive automated traffic
-- no resale of raw API outputs as a standalone product
-- attribution required when used in public tools
-
-For full details:
-👉 https://www.obolusfinanz.de/en/developers
-
+This is a public integration example, not the MCP server's source repository. The hosted API has [usage terms and rate limits](https://www.obolusfinanz.de/en/developers); do not assume unrestricted production access from this demo. Do not commit API keys or other credentials. The public read-only MCP tools need no key.

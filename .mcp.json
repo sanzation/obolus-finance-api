@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "obolus": {
+      "type": "http",
+      "url": "https://www.obolusfinanz.de/api/mcp/claude"
+    }
+  }
+}
